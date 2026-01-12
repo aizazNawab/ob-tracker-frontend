@@ -7,10 +7,11 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ApplicationForm from './pages/ApplicationForm';
 import ApplicationDetail from './pages/ApplicationDetail';
+import ForgotPassword from './pages/ForgotPassword';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = React.useContext(AuthContext);
-
+  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -21,7 +22,7 @@ const PrivateRoute = ({ children }) => {
       </div>
     );
   }
-
+  
   return user ? children : <Navigate to="/login" />;
 };
 
@@ -33,29 +34,30 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route
-              path="/dashboard"
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route 
+              path="/dashboard" 
               element={
                 <PrivateRoute>
                   <Dashboard />
                 </PrivateRoute>
-              }
+              } 
             />
-            <Route
-              path="/add-application"
+            <Route 
+              path="/add-application" 
               element={
                 <PrivateRoute>
                   <ApplicationForm />
                 </PrivateRoute>
-              }
+              } 
             />
-            <Route
-              path="/edit-application/:id"
+            <Route 
+              path="/edit-application/:id" 
               element={
                 <PrivateRoute>
                   <ApplicationForm />
                 </PrivateRoute>
-              }
+              } 
             />
             <Route
               path="/application/:id"

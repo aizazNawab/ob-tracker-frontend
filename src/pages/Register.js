@@ -78,7 +78,16 @@ const Register = () => {
         }
       }
     } catch (err) {
-      const errorMsg = err.response?.data?.message || 'Failed to send verification code';
+      let errorMsg = 'Failed to send verification code';
+      
+      if (err.code === 'ECONNABORTED' || err.message === 'timeout of 30000ms exceeded') {
+        errorMsg = 'Request timed out. Please check your connection and try again.';
+      } else if (err.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      } else if (err.message) {
+        errorMsg = err.message;
+      }
+      
       setError(errorMsg);
       showToast(errorMsg, 'error');
     } finally {

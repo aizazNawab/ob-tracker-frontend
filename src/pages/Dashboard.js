@@ -10,9 +10,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('date');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [sortBy, setSortBy] = useState('date'); // 'date', 'company', 'status'
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, id: null });
   const { user, logout } = useContext(AuthContext);
   const { showToast } = useToast();
@@ -53,7 +51,7 @@ const Dashboard = () => {
 
   // Filter and search
   let filteredApplications = filter === 'All'
-    ? applications
+    ? applications 
     : applications.filter(app => app.status === filter);
 
   if (searchQuery) {
@@ -76,14 +74,6 @@ const Dashboard = () => {
         return new Date(b.appliedDate) - new Date(a.appliedDate);
     }
   });
-
-  // Pagination
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentApplications = sortedApplications.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(sortedApplications.length / itemsPerPage);
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const stats = {
     total: applications.length,
@@ -142,7 +132,12 @@ const Dashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <div className="card bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200">
+          <div 
+            onClick={() => setFilter('All')}
+            className={`card cursor-pointer transition-all hover:shadow-lg ${
+              filter === 'All' ? 'ring-2 ring-gray-400' : ''
+            } bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200`}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Total</p>
@@ -156,7 +151,12 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="card bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200">
+          <div 
+            onClick={() => setFilter('Applied')}
+            className={`card cursor-pointer transition-all hover:shadow-lg ${
+              filter === 'Applied' ? 'ring-2 ring-blue-400' : ''
+            } bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200`}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-blue-700">Applied</p>
@@ -170,7 +170,12 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="card bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200">
+          <div 
+            onClick={() => setFilter('Interview')}
+            className={`card cursor-pointer transition-all hover:shadow-lg ${
+              filter === 'Interview' ? 'ring-2 ring-yellow-400' : ''
+            } bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200`}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-yellow-700">Interview</p>
@@ -184,7 +189,12 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="card bg-gradient-to-br from-green-50 to-green-100 border border-green-200">
+          <div 
+            onClick={() => setFilter('Offer')}
+            className={`card cursor-pointer transition-all hover:shadow-lg ${
+              filter === 'Offer' ? 'ring-2 ring-green-400' : ''
+            } bg-gradient-to-br from-green-50 to-green-100 border border-green-200`}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-green-700">Offer</p>
@@ -198,7 +208,12 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="card bg-gradient-to-br from-red-50 to-red-100 border border-red-200">
+          <div 
+            onClick={() => setFilter('Rejected')}
+            className={`card cursor-pointer transition-all hover:shadow-lg ${
+              filter === 'Rejected' ? 'ring-2 ring-red-400' : ''
+            } bg-gradient-to-br from-red-50 to-red-100 border border-red-200`}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-red-700">Rejected</p>
@@ -228,10 +243,7 @@ const Dashboard = () => {
                   type="text"
                   placeholder="Search by company, position, or location..."
                   value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setCurrentPage(1);
-                  }}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="input-field pl-10"
                 />
               </div>
@@ -242,10 +254,7 @@ const Dashboard = () => {
               <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Filter:</label>
               <select
                 value={filter}
-                onChange={(e) => {
-                  setFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
+                onChange={(e) => setFilter(e.target.value)}
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
               >
                 <option>All</option>
@@ -273,8 +282,8 @@ const Dashboard = () => {
             </div>
 
             {/* Add Button */}
-            <button
-              onClick={() => navigate('/add-application')}
+            <button 
+              onClick={() => navigate('/add-application')} 
               className="btn-success flex items-center gap-2 whitespace-nowrap"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -314,113 +323,66 @@ const Dashboard = () => {
             )}
           </div>
         ) : (
-          <>
-            <div className="card overflow-hidden p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Company</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Position</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Location</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Applied Date</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+          <div className="card overflow-hidden p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Company</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Position</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Location</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Applied Date</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Interview Time</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {sortedApplications.map((app) => (
+                    <tr key={app._id} className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => navigate(`/application/${app._id}`)}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="font-semibold text-gray-900">{app.companyName}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-gray-900">{app.position}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`status-badge ${getStatusColor(app.status)}`}>
+                          {app.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                        {app.location || 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                        {new Date(app.appliedDate).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {app.interviewDateTime ? new Date(app.interviewDateTime).toLocaleString() : 'N/A'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-2">
+                          <button 
+                            onClick={() => navigate(`/edit-application/${app._id}`)} 
+                            className="text-blue-600 hover:text-blue-900 font-medium"
+                          >
+                            Edit
+                          </button>
+                          <span className="text-gray-300">|</span>
+                          <button 
+                            onClick={() => setDeleteModal({ isOpen: true, id: app._id })}
+                            className="text-red-600 hover:text-red-900 font-medium"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {currentApplications.map((app) => (
-                      <tr key={app._id} className="hover:bg-gray-50 transition-colors cursor-pointer" onClick={() => navigate(`/application/${app._id}`)}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="font-semibold text-gray-900">{app.companyName}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-gray-900">{app.position}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`status-badge ${getStatusColor(app.status)}`}>
-                            {app.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                          {app.location || 'N/A'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                          {new Date(app.appliedDate).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium" onClick={(e) => e.stopPropagation()}>
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => navigate(`/edit-application/${app._id}`)}
-                              className="text-blue-600 hover:text-blue-900 font-medium"
-                            >
-                              Edit
-                            </button>
-                            <span className="text-gray-300">|</span>
-                            <button
-                              onClick={() => setDeleteModal({ isOpen: true, id: app._id })}
-                              className="text-red-600 hover:text-red-900 font-medium"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="card mt-6">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
-                    Showing <span className="font-medium">{indexOfFirstItem + 1}</span> to <span className="font-medium">{Math.min(indexOfLastItem, sortedApplications.length)}</span> of <span className="font-medium">{sortedApplications.length}</span> applications
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => paginate(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${currentPage === 1
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                    >
-                      Previous
-                    </button>
-
-                    <div className="flex gap-1">
-                      {[...Array(totalPages)].map((_, index) => (
-                        <button
-                          key={index + 1}
-                          onClick={() => paginate(index + 1)}
-                          className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${currentPage === index + 1
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-                            }`}
-                        >
-                          {index + 1}
-                        </button>
-                      ))}
-                    </div>
-
-                    <button
-                      onClick={() => paginate(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${currentPage === totalPages
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                        : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </>
+          </div>
         )}
       </main>
 

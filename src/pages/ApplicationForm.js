@@ -13,6 +13,7 @@ const ApplicationForm = () => {
     salary: '',
     appliedDate: new Date().toISOString().split('T')[0],
     deadline: '',
+    interviewDateTime: '',
     notes: ''
   });
   const [error, setError] = useState('');
@@ -33,17 +34,18 @@ const ApplicationForm = () => {
     try {
       const response = await applicationAPI.getOne(id);
       const app = response.data.data;
-      setFormData({
-        companyName: app.companyName,
-        position: app.position,
-        status: app.status,
-        jobUrl: app.jobUrl || '',
-        location: app.location || '',
-        salary: app.salary || '',
-        appliedDate: app.appliedDate ? new Date(app.appliedDate).toISOString().split('T')[0] : '',
-        deadline: app.deadline ? new Date(app.deadline).toISOString().split('T')[0] : '',
-        notes: app.notes || ''
-      });
+   setFormData({
+  companyName: app.companyName,
+  position: app.position,
+  status: app.status,
+  jobUrl: app.jobUrl || '',
+  location: app.location || '',
+  salary: app.salary || '',
+  appliedDate: app.appliedDate ? new Date(app.appliedDate).toISOString().split('T')[0] : '',
+  deadline: app.deadline ? new Date(app.deadline).toISOString().split('T')[0] : '',
+  interviewDateTime: app.interviewDateTime ? new Date(app.interviewDateTime).toISOString().slice(0, 16) : '',  // ADD THIS LINE
+  notes: app.notes || ''
+});
     } catch (error) {
       setError('Error loading application');
     }
@@ -57,7 +59,7 @@ const ApplicationForm = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
+    
     try {
       if (isEdit) {
         await applicationAPI.update(id, formData);
@@ -104,7 +106,7 @@ const ApplicationForm = () => {
               <p className="text-sm text-red-800">{error}</p>
             </div>
           )}
-
+      
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Company and Position Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -112,32 +114,32 @@ const ApplicationForm = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Company Name <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  name="companyName"
-                  value={formData.companyName}
-                  onChange={handleChange}
-                  required
+          <input
+            type="text"
+            name="companyName"
+            value={formData.companyName}
+            onChange={handleChange}
+            required
                   className="input-field"
                   placeholder="e.g., Google, Microsoft"
-                />
-              </div>
+          />
+        </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Position <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  name="position"
-                  value={formData.position}
-                  onChange={handleChange}
-                  required
+          <input
+            type="text"
+            name="position"
+            value={formData.position}
+            onChange={handleChange}
+            required
                   className="input-field"
                   placeholder="e.g., Software Engineer"
-                />
+          />
               </div>
-            </div>
+        </div>
 
             {/* Status and Location Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -145,20 +147,20 @@ const ApplicationForm = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Status
                 </label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
                   className="input-field"
-                >
-                  <option value="Applied">Applied</option>
-                  <option value="Interview">Interview</option>
-                  <option value="Offer">Offer</option>
-                  <option value="Rejected">Rejected</option>
-                  <option value="Accepted">Accepted</option>
-                  <option value="Withdrawn">Withdrawn</option>
-                </select>
-              </div>
+          >
+            <option value="Applied">Applied</option>
+            <option value="Interview">Interview</option>
+            <option value="Offer">Offer</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Accepted">Accepted</option>
+            <option value="Withdrawn">Withdrawn</option>
+          </select>
+        </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -181,80 +183,95 @@ const ApplicationForm = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Job URL
                 </label>
-                <input
-                  type="url"
-                  name="jobUrl"
-                  value={formData.jobUrl}
-                  onChange={handleChange}
+          <input
+            type="url"
+            name="jobUrl"
+            value={formData.jobUrl}
+            onChange={handleChange}
                   className="input-field"
                   placeholder="https://company.com/jobs/..."
-                />
-              </div>
+          />
+        </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Salary
                 </label>
-                <input
-                  type="text"
-                  name="salary"
-                  value={formData.salary}
-                  onChange={handleChange}
+          <input
+            type="text"
+            name="salary"
+            value={formData.salary}
+            onChange={handleChange}
                   className="input-field"
-                  placeholder="e.g., $80k-$100k"
-                />
+            placeholder="e.g., $80k-$100k"
+          />
               </div>
-            </div>
+        </div>
+{/* Dates Row */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-2">
+      Applied Date
+    </label>
+    <input
+      type="date"
+      name="appliedDate"
+      value={formData.appliedDate}
+      onChange={handleChange}
+      className="input-field"
+    />
+  </div>
 
-            {/* Dates Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Applied Date
-                </label>
-                <input
-                  type="date"
-                  name="appliedDate"
-                  value={formData.appliedDate}
-                  onChange={handleChange}
-                  className="input-field"
-                />
-              </div>
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-2">
+      Deadline (Optional)
+    </label>
+    <input
+      type="date"
+      name="deadline"
+      value={formData.deadline}
+      onChange={handleChange}
+      className="input-field"
+    />
+  </div>
+</div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Deadline (Optional)
-                </label>
-                <input
-                  type="date"
-                  name="deadline"
-                  value={formData.deadline}
-                  onChange={handleChange}
-                  className="input-field"
-                />
-              </div>
-            </div>
-
+{/* Interview Time Row - ADD THIS ENTIRE SECTION */}
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-2">
+    Interview Date & Time (Optional)
+  </label>
+  <input
+    type="datetime-local"
+    name="interviewDateTime"
+    value={formData.interviewDateTime}
+    onChange={handleChange}
+    className="input-field"
+  />
+  <p className="text-sm text-gray-500 mt-1">
+    You'll receive an email reminder 10 minutes before your interview
+  </p>
+</div>
             {/* Notes */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Notes
               </label>
-              <textarea
-                name="notes"
-                value={formData.notes}
-                onChange={handleChange}
-                rows="4"
+          <textarea
+            name="notes"
+            value={formData.notes}
+            onChange={handleChange}
+            rows="4"
                 className="input-field"
                 placeholder="Add any additional notes about this application..."
-              />
-            </div>
+          />
+        </div>
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-200">
-              <button
-                type="submit"
-                disabled={loading}
+          <button 
+            type="submit" 
+            disabled={loading}
                 className="btn-success flex-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
@@ -270,16 +287,16 @@ const ApplicationForm = () => {
                     {isEdit ? 'Update Application' : 'Create Application'}
                   </>
                 )}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate('/dashboard')}
+          </button>
+          <button 
+            type="button"
+            onClick={() => navigate('/dashboard')}
                 className="btn-secondary flex-1"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
         </div>
       </div>
     </div>
